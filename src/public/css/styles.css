@@ -1,0 +1,8 @@
+/* public/css/styles.css */
+/* Import TailwindCSS from CDN (lightweight setup) */
+@import "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css";
+
+/* Custom project-specific overrides (optional placeholders) */
+body {
+  font-family: 'Inter', sans-serif;
+}

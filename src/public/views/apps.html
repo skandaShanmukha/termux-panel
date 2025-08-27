@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Termux Panel</title>
+  <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+
+  <!-- Navigation Bar -->
+  <nav class="bg-gray-800 text-white p-4 flex justify-between">
+    <div class="font-bold">Termux Panel</div>
+    <div class="space-x-4">
+      <a href="/" class="hover:text-gray-300">Dashboard</a>
+      <a href="/system" class="hover:text-gray-300">System</a>
+      <a href="/apps" class="hover:text-gray-300">Apps</a>
+      <a href="/logs" class="hover:text-gray-300">Logs</a>
+      <a href="/settings" class="hover:text-gray-300">Settings</a>
+    </div>
+  </nav>
+
+  <!-- ------------------------------- -->
+  <!-- Installed Apps Section -->
+  <!-- ------------------------------- -->
+  <section class="mb-8">
+    <h2 class="text-xl font-bold mb-4">Installed Apps</h2>
+    <div 
+      id="installed-apps"
+      hx-get="/api/apps"
+      hx-trigger="load"
+      hx-target="this"
+      hx-swap="innerHTML"
+      class="space-y-4"
+    >
+      <!-- Installed apps will be dynamically loaded here -->
+    </div>
+  </section>
+
+  <!-- ------------------------------- -->
+  <!-- Available Apps Section -->
+  <!-- ------------------------------- -->
+  <section>
+    <h2 class="text-xl font-bold mb-4">Available Apps</h2>
+    <div 
+      id="available-apps"
+      hx-get="/api/apps/registry"
+      hx-trigger="load"
+      hx-target="this"
+      hx-swap="innerHTML"
+      class="space-y-4"
+    >
+      <!-- Registry apps will be dynamically loaded here -->
+    </div>
+  </section>
+
+  <!-- Modal container for dynamic installation forms -->
+  <div id="modal-container"></div>
+
+</body>
+</html>

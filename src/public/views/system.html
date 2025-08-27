@@ -1,0 +1,169 @@
+<!-- public/views/system.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/css/styles.css" rel="stylesheet">
+  <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    canvas { height: 150px !important; width: 100% !important; }
+    .chart-container { background: #fff; padding: 1rem; border-radius: 0.5rem; box-shadow: 0 0 5px #ccc; }
+    .health-msg { margin-top: 0.5rem; font-weight: bold; }
+    .health-msg span { margin-right: 0.5rem; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+  <!-- Navigation Bar -->
+  <nav class="bg-gray-800 text-white p-4 flex justify-between">
+    <div class="font-bold">Termux Panel</div>
+    <div class="space-x-4">
+      <a href="/" class="hover:text-gray-300">Dashboard</a>
+      <a href="/system" class="hover:text-gray-300">System</a>
+      <a href="/apps" class="hover:text-gray-300">Apps</a>
+      <a href="/logs" class="hover:text-gray-300">Logs</a>
+      <a href="/settings" class="hover:text-gray-300">Settings</a>
+    </div>
+  </nav>
+
+  <main class="p-4 max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">System Monitor</h1>
+
+    <!-- System Stats & Health -->
+    <div id="stats"
+         hx-get="/api/system/stats"
+         hx-trigger="load, every 10s"
+         hx-target="#stats"
+         class="bg-white rounded shadow p-4 mb-4">
+      <p>Loading system stats...</p>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div class="chart-container">
+        <h2 class="text-xl font-semibold mb-2">CPU Usage (%)</h2>
+        <canvas id="cpuChart"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <h2 class="text-xl font-semibold mb-2">Memory Usage (MB)</h2>
+        <canvas id="memoryChart"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <h2 class="text-xl font-semibold mb-2">System Load</h2>
+        <canvas id="loadChart"></canvas>
+      </div>
+
+      <div class="chart-container">
+        <h2 class="text-xl font-semibold mb-2">Top Processes (%)</h2>
+        <canvas id="processChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Process List -->
+    <div>
+      <h2 class="text-xl font-semibold mb-2">Processes</h2>
+      <div id="processes"
+           hx-get="/api/system/processes?page=1"
+           hx-trigger="load"
+           hx-target="#processes"
+           class="bg-white rounded shadow p-4">
+        <p>Loading processes...</p>
+      </div>
+    </div>
+  </main>
+
+<script>
+  const MAX_POINTS = 12;
+  const timeLabels = [], cpuData = [], memData = [], loadData = [];
+  let cpuChart, memChart, loadChart, processChart;
+
+  const initLineChart = (ctx, label, color, fill=false) => new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [{ label, data: [], borderColor: color, backgroundColor: fill ? color+"33" : undefined, fill }] },
+    options: { responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false} }
+  });
+
+  function initCharts() {
+    const cpuCanvas = document.getElementById("cpuChart");
+    const memCanvas = document.getElementById("memoryChart");
+    const loadCanvas = document.getElementById("loadChart");
+    const processCanvas = document.getElementById("processChart");
+
+    if(!cpuCanvas || !memCanvas || !loadCanvas || !processCanvas) return;
+
+    cpuChart = initLineChart(cpuCanvas.getContext("2d"), "CPU %", "#ef4444");
+    memChart = initLineChart(memCanvas.getContext("2d"), "Used Memory MB", "#22c55e", true);
+    loadChart = initLineChart(loadCanvas.getContext("2d"), "1-min Load", "#facc15");
+    processChart = new Chart(processCanvas.getContext("2d"), {
+      type: 'bar',
+      data: { labels: [], datasets: [{ label: "CPU %", data: [], backgroundColor:"#3b82f6" }] },
+      options: { responsive:true, maintainAspectRatio:false, indexAxis:'y' }
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", initCharts);
+
+  document.body.addEventListener("htmx:afterSwap", (e)=>{
+    const statsEl = document.getElementById("stats");
+    const procTable = document.querySelector("#processes table tbody");
+    if(!statsEl || !cpuChart) return;
+
+    const cpuCores = parseInt(statsEl.dataset.cpus||1);
+    const cpuLoad = parseFloat(statsEl.dataset.load1||0);
+    const totalMem = parseFloat(statsEl.dataset.totalmem||0);
+    const freeMem = parseFloat(statsEl.dataset.freemem||0);
+    const usedMem = totalMem - freeMem;
+    const now = new Date().toLocaleTimeString();
+
+    if(timeLabels.length>=MAX_POINTS){ timeLabels.shift(); cpuData.shift(); memData.shift(); loadData.shift(); }
+    timeLabels.push(now);
+    cpuData.push(cpuLoad/cpuCores*100);
+    memData.push(usedMem);
+    loadData.push(cpuLoad);
+
+    cpuChart.data.labels = timeLabels; cpuChart.data.datasets[0].data = cpuData; cpuChart.update();
+    memChart.data.labels = timeLabels; memChart.data.datasets[0].data = memData; memChart.update();
+    loadChart.data.labels = timeLabels; loadChart.data.datasets[0].data = loadData; loadChart.update();
+
+    if(procTable){
+      const procRows = Array.from(procTable.rows)
+        .map(tr=>({ cmd: tr.cells[3]?.innerText||"?", cpu: parseFloat(tr.cells[1]?.innerText.replace("%",""))||0 }))
+        .sort((a,b)=>b.cpu-a.cpu)
+        .slice(0,5);
+
+      processChart.data.labels = procRows.map(p=>p.cmd);
+      processChart.data.datasets[0].data = procRows.map(p=>p.cpu);
+      processChart.update();
+    }
+
+    // Insert Health Messages
+    const healthContainer = document.createElement("div");
+    healthContainer.className = "health-msg";
+
+    const freePercent = totalMem ? (freeMem/totalMem)*100 : 0;
+    const msgs = [];
+
+    if(cpuLoad/cpuCores > 1) msgs.push("⚠️ High CPU load");
+    else if(cpuLoad/cpuCores > 0.7) msgs.push("🟡 CPU load moderate"); 
+    else msgs.push("🟢 CPU load normal");
+
+    if(freePercent < 10) msgs.push("🚨 Very low memory!");
+    else if(freePercent < 25) msgs.push("⚠️ Memory running low");
+    else msgs.push("🟢 Memory usage OK");
+
+    const load5 = parseFloat(statsEl.dataset.load5||0);
+    if(load5>cpuCores) msgs.push("⚠️ 5-min load high");
+
+    healthContainer.innerHTML = msgs.map(m=>`<span>${m}</span>`).join('');
+    const existing = statsEl.querySelector(".health-msg");
+    if(existing) existing.replaceWith(healthContainer); else statsEl.appendChild(healthContainer);
+  });
+</script>
+
+</body>
+</html>

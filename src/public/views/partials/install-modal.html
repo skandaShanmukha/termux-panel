@@ -1,0 +1,29 @@
+<!-- Modal overlay -->
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+    <!-- Close button -->
+    <button 
+      class="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+      onclick="this.closest('div').remove()"
+    >&times;</button>
+
+    <h3 class="text-lg font-bold mb-4">Install {{name}}</h3>
+    <p class="text-gray-600 mb-4">{{description}}</p>
+
+    <form 
+      hx-post="/api/apps/{{id}}/install" 
+      hx-on:after-request="if (event.detail.successful) location.reload()"
+      class="space-y-4"
+    >
+      <!-- Dynamic field example: Port -->
+      <div>
+        <label class="block text-sm font-medium mb-1" for="port">Port</label>
+        <input type="number" name="port" id="port" value="{{defaultPort}}" class="w-full border rounded px-2 py-1" />
+      </div>
+
+      <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+        Install
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "hello-world-http",
+    "name": "Hello World Server",
+    "description": "A simple static file server using the http-server npm package.",
+    "category": "Web Server",
+    "config": {
+      "script": "http-server",
+      "args": ["-p", "8080"],
+      "env": {},
+      "cwd": "./"
+    }
+  },
+  {
+    "id": "htop",
+    "name": "htop",
+    "description": "Interactive process viewer",
+    "category": "System",
+    "config": {
+      "script": "htop",
+      "args": [],
+      "env": {},
+      "cwd": "./"
+    }
+  }
+]

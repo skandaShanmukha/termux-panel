@@ -1,0 +1,26 @@
+[
+  {
+    "id": "hello-world-http",
+    "name": "Hello World Server",
+    "description": "A simple static file server using the http-server npm package.",
+    "category": "Web Server",
+    "install": { "type": "npm", "package": "http-server" },
+    "config": { "script": "http-server", "args": ["-p", "8080"], "env": {}, "cwd": "./" }
+  },
+  {
+    "id": "ssh-server",
+    "name": "SSH Server",
+    "description": "OpenSSH server for remote access",
+    "category": "Network",
+    "install": { "type": "apt", "package": "openssh-server" },
+    "config": { "script": "sshd", "args": ["-D"], "env": {}, "cwd": "./" }
+  },
+  {
+    "id": "nmap",
+    "name": "Nmap",
+    "description": "Network exploration tool and security scanner",
+    "category": "Network",
+    "install": { "type": "apt", "package": "nmap" },
+    "config": { "script": "nmap", "args": ["--help"], "env": {}, "cwd": "./" }
+  }
+]

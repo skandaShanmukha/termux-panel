@@ -1,0 +1,21 @@
+<div>
+  <table class="table-auto w-full border-collapse border border-gray-300 text-sm">
+    <thead class="bg-gray-200">
+      <tr>
+        <th class="border px-2 py-1">PID</th>
+        <th class="border px-2 py-1">Command</th>
+        <th class="border px-2 py-1">CPU %</th>
+        <th class="border px-2 py-1">MEM %</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{rows}}
+    </tbody>
+  </table>
+
+  <!-- Pagination Controls -->
+  <div class="flex justify-between mt-2">
+    {{prevButton}}
+    {{nextButton}}
+  </div>
+</div>

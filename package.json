@@ -1,0 +1,23 @@
+{
+  "name": "termux-panel",
+  "version": "0.0.1",
+  "description": "Termux Panel - Mobile-first control panel for low-spec devices",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "fs-extra": "^11.3.1",
+    "http-server": "^14.1.1",
+    "lowdb": "^7.0.1",
+    "pm2": "^6.0.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "author": "Koustubh Dave",
+  "license": "MIT"
+}

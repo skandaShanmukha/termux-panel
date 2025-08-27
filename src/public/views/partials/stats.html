@@ -1,0 +1,41 @@
+<div id="stats-card" class="space-y-4">
+
+  <!-- Refresh Button -->
+  <div class="flex justify-end">
+    <button 
+      class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+      hx-get="/api/system/stats"
+      hx-target="#stats-card"
+      hx-swap="outerHTML">
+      Refresh
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+
+    <!-- System Info -->
+    <div class="bg-white p-4 rounded-lg shadow">
+      <h2 class="text-lg font-semibold mb-2">System Stats</h2>
+      <ul class="space-y-1">
+        <li><b>Uptime:</b> {{uptime}}</li>
+        <li><b>CPU Cores:</b> {{cpus}}</li>
+        <li><b>Load Avg (1/5/15m):</b> {{load1}} / {{load5}} / {{load15}}</li>
+        <li><b>Total Memory:</b> {{totalMem}}</li>
+        <li><b>Free Memory:</b> {{freeMem}}</li>
+        <li><b>Used %:</b> {{usedPercent}}</li>
+      </ul>
+    </div>
+
+    <!-- Network Info -->
+    <div class="bg-white p-4 rounded-lg shadow">
+      <h2 class="text-lg font-semibold mb-2">Network</h2>
+      <ul class="space-y-1">
+        <li><b>Private IP:</b> {{privateIp}}</li>
+        <li><b>Public IP:</b> {{publicIp}}</li>
+        <li><b>Gateway:</b> {{gateway}}</li>
+        <li><b>Interface:</b> {{ifaceName}}</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
