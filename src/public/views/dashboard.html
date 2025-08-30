@@ -26,21 +26,19 @@
       <h1 class="m-4 text-2xl font-bold mb-4">Termux Panel Dashboard</h1>
 
   <!-- SYSTEM STATS SECTION -->
-  <section class="mb-6 m-4">
-    <h2 class="text-xl font-semibold mb-2">System & Network Stats</h2>
-    <div 
-      id="system-stats-container"
-      hx-get="/api/system/stats" 
-      hx-trigger="load" 
-      hx-target="#system-stats" 
-      hx-swap="innerHTML"
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-    >
-      <div id="system-stats" class="grid grid-cols-1 gap-2">
-        <div class="p-4 bg-white rounded shadow">Loading system stats...</div>
-      </div>
-    </div>
-  </section>
+<section class="mb-6 m-4">
+  <h2 class="text-xl font-semibold mb-2">System & Network Stats</h2>
+  <div 
+    id="system-stats"
+    hx-get="/api/system/stats" 
+    hx-trigger="load" 
+    hx-target="#system-stats" 
+    hx-swap="innerHTML"
+  >
+    <div class="p-4 bg-white rounded shadow">Loading system stats...</div>
+  </div>
+</section>
+
 
   <!-- INSTALLED APPS SECTION -->
   <section class="m-4">
@@ -50,7 +48,6 @@
       hx-trigger="load" 
       hx-target="#installed-apps" 
       hx-swap="innerHTML"
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
     >
       <div id="installed-apps">
         <div class="p-4 bg-white rounded shadow">Loading installed apps...</div>
@@ -85,7 +82,7 @@
           if(data.network){
             const net = data.network;
             const netCard = document.createElement('div');
-            netCard.className = "p-4 bg-white rounded shadow col-span-1 md:col-span-2 lg:col-span-4";
+            netCard.className = "p-4 bg-white rounded shadow ";
             netCard.innerHTML = `
               <div class="font-semibold mb-2">Network Info</div>
               <div class="text-sm text-gray-700">
